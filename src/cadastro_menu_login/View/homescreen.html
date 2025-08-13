@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Marcela — Home</title>
+
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../public/css/styles.css">
+</head>
+<body id="page-home">
+
+  <!-- Top navigation bar -->
+  <header class="topbar" id="topbar" role="navigation" aria-label="Navegação principal">
+    <nav class="nav-inner" id="navInner">
+      <a href="homescreen.html" class="nav-link">Sobre</a>
+      <a href="homescreen.html" class="nav-link">Objetivo</a>
+      <a href="homescreen.html" class="nav-link">Contato</a>
+    </nav>
+  </header>
+
+  <!-- vídeo de fundo -->
+  <div class="background-video" aria-hidden="true">
+    <video autoplay loop muted playsinline>
+      <source src="fundo_da_tela.mp4" type="video/mp4" />
+      Seu navegador não suporta reprodução de vídeo.
+    </video>
+  </div>
+
+  <!-- overlay -->
+  <div class="overlay" aria-hidden="true"></div>
+
+  <!-- HERO -->
+  <main class="hero-screen" role="main">
+    <div class="hero">
+      <h1 class="title">Marcela</h1>
+      <p class="subtitle">
+        Plataforma de pesquisa em genética,<br />
+        simulação genética e árvore genealógica digital
+      </p>
+
+      <!-- leva para a página de cadastro -->
+      <a class="enter-button" href="cadastro.html" id="enterBtn">Entrar</a>
+    </div>
+
+    <div class="website-link" id="websiteLink">www.MarcelaSHOW.com</div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
