@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
+create schema BioLineage;
+
+CREATE TABLE IF NOT EXISTS usuario (
   `idusuario` INT NOT NULL,
   `nome` VARCHAR(45) NOT NULL,
   `email` VARCHAR(45) NULL,
@@ -7,19 +9,26 @@ CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
   `dataNascimento` VARCHAR(45) NULL,
   `Instituicao` VARCHAR(45) NULL,
   `descricao` VARCHAR(45) NULL,
+  
+  
+     
   PRIMARY KEY (`idusuario`))
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table `mydb`.`perfil`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`perfil` (
+
+CREATE TABLE IF NOT EXISTS perfil (
   `id` INT NOT NULL,
   `nome` VARCHAR(45) NOT NULL,
   `cor_olho` VARCHAR(45) NOT NULL,
   `cor_cabelo` VARCHAR(45) NOT NULL,
   `tipo_sangue` VARCHAR(45) NOT NULL,
+  `tipo_orelha` VARCHAR(45) NULL,
+  `tipo_sanguineo` VARCHAR(45) NULL,
+  `cov_queixo` VARCHAR(45) NULL,
+  `cov_bochecha` VARCHAR(45) NULL,
+  `nacionalidade` VARCHAR(45) NULL,
+  `doenca_genealogica` VARCHAR(45) NULL,
   `usuariocol` VARCHAR(45) NOT NULL,
   `usuariocol1` VARCHAR(45) NULL,
   `usuario_idusuario` INT NOT NULL,
