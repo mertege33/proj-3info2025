@@ -60,39 +60,42 @@
         <!-- Inputs apenas visuais (sem submissão real) -->
         <div class="row">
           <label>Nome completo</label>
-          <input type="text" placeholder="Seu nome completo" />
+          <input type="text" name="nome" placeholder="Seu nome completo" readonly value={nome}/>
         </div>
 
         <div class="row two-cols">
           <div>
             <label>E-mail</label>
-            <input type="email" placeholder="exemplo@dominio.com" />
+            <input type="email" name="email" placeholder="exemplo@dominio.com" readonly value={email}/>
           </div>
+
           <div>
             <label>Telefone</label>
-            <input type="tel" placeholder="(xx) xxxxx-xxxx" />
+            <input type="tel" name="telefone" placeholder="(xx) xxxxx-xxxx" readonly value={telefone}"/>
           </div>
         </div>
 
         <div class="row two-cols">
           <div>
             <label>Senha</label>
-            <input type="password" placeholder="Mínimo 6 caracteres" />
+            <input type="password" name="senha" placeholder="Mínimo 6 caracteres" readonly value={senha} />
           </div>
+
           <div>
             <label>Confirmar senha</label>
-            <input type="password" placeholder="Repita a senha" />
+            <input type="password" name="confirmar" placeholder="Repita a senha" readonly value={confirmar} />
           </div>
         </div>
 
         <div class="row two-cols">
           <div>
             <label>Data de nascimento</label>
-            <input type="date" />
+            <input type="date" name="dt_nascimento" readonly value={dt_nascimento}/>
           </div>
+
           <div>
             <label>Instituição</label>
-            <input type="text" placeholder="Universidade / Empresa (opcional)" />
+            <input type="text" name="instituicao" placeholder="Universidade / Empresa (opcional)" readonly value={instituicao}/>
           </div>
         </div>
 
@@ -116,7 +119,6 @@
           <ul>
             <li>Salvar e gerenciar seus projetos</li>
             <li>Simular experimentos e gerar árvores genealógicas</li>
-            <li>Compartilhar resultados com o grupo Geoplantex</li>
           </ul>
           <p class="small">Ao se cadastrar você concorda com os <a href="homescreen.html">termos</a>.</p>
         </div>
