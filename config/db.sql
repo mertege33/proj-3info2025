@@ -9,11 +9,7 @@ CREATE TABLE IF NOT EXISTS usuario (
   dataNascimento VARCHAR(45) NULL,
   Instituicao VARCHAR(45) NULL,
   descricao VARCHAR(45) NULL,
-  
-  
-     
-  PRIMARY KEY (idusuario));
-
+  PRIMARY KEY (id_usuario));
 
 
 CREATE TABLE IF NOT EXISTS perfil (
@@ -21,7 +17,6 @@ CREATE TABLE IF NOT EXISTS perfil (
   nome VARCHAR(45) NOT NULL,
   cor_olho VARCHAR(45) NOT NULL,
   cor_cabelo VARCHAR(45) NOT NULL,
-  tipo_sangue VARCHAR(45) NOT NULL,
   tipo_orelha VARCHAR(45) NULL,
   tipo_sanguineo VARCHAR(45) NULL,
   cov_queixo VARCHAR(45) NULL,
@@ -35,18 +30,15 @@ CREATE TABLE IF NOT EXISTS perfil (
   id_mae INT NOT NULL,
   PRIMARY KEY (id_perfil),
 
-  CONSTRAINT fk_perfil_usuario
-    FOREIGN KEY (usuario_id_usuario)
-    REFERENCES mydb.usuario (id_usuario)
+    FOREIGN KEY (usuario_idusuario)
+    REFERENCES usuario (id_usuario)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT fk_perfil_usuario1
     FOREIGN KEY (id_pai)
-    REFERENCES mydb.usuario (id_usuario)
+    REFERENCES usuario (id_usuario)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT fk_perfil_usuario2
     FOREIGN KEY (id_mae)
-    REFERENCES mydb.usuario (id_usuario)
+    REFERENCES usuario (id_usuario)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
