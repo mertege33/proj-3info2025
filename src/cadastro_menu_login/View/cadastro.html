@@ -60,28 +60,28 @@
         <!-- Inputs apenas visuais (sem submissão real) -->
         <div class="row">
           <label>Nome completo</label>
-          <input type="text" placeholder="Seu nome completo" />
+          <input type="text" name="nome" placeholder="Seu nome completo"  readonly value={nome}/>
         </div>
 
         <div class="row two-cols">
           <div>
             <label>E-mail</label>
-            <input type="email" placeholder="exemplo@dominio.com" />
+            <input type="email" name="email" placeholder="exemplo@dominio.com" readonly value="{email}" />
           </div>
           <div>
             <label>Telefone</label>
-            <input type="tel" placeholder="(xx) xxxxx-xxxx" />
+            <input type="tel" name="telefone" placeholder="(xx) xxxxx-xxxx" readonly value="{telefone}" />
           </div>
         </div>
 
         <div class="row two-cols">
           <div>
             <label>Senha</label>
-            <input type="password" placeholder="Mínimo 6 caracteres" />
+            <input type="password" name="senha" placeholder="Mínimo 6 caracteres" readonly value="{senha}" />
           </div>
           <div>
             <label>Confirmar senha</label>
-            <input type="password" placeholder="Repita a senha" />
+            <input type="password" name="confirm" placeholder="Repita a senha" readonly value="confirm" />
           </div>
         </div>
 
