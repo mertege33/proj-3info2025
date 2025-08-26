@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS usuario (
 
 
 CREATE TABLE IF NOT EXISTS perfil (
+  sexo VARCHAR(45) NOT NULL,
   id_perfil INT NOT NULL,
   nome VARCHAR(45) NOT NULL,
   cor_olho VARCHAR(45) NOT NULL,
