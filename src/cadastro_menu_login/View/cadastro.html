@@ -13,9 +13,9 @@
   <!-- Top navigation bar (será ocultado pelo JS) -->
   <header class="topbar" id="topbar" role="navigation" aria-label="Navegação principal">
     <nav class="nav-inner" id="navInner">
-      <a href="homescreen.html" class="nav-link">Sobre</a>
-      <a href="homescreen.html" class="nav-link">Objetivo</a>
-      <a href="homescreen.html" class="nav-link">Contato</a>
+      <a href="sobre.html" class="nav-link">Sobre</a>
+      <a href="objetivo.html" class="nav-link">Objetivo</a>
+      <a href="contato.html" class="nav-link">Contato</a>
     </nav>
   </header>
 
@@ -60,30 +60,31 @@
         <!-- Inputs apenas visuais (sem submissão real) -->
         <div class="row">
           <label>Nome completo</label>
+          <input type="text" name="nome" placeholder="Seu nome completo"  readonly value={nome}/>
           <input type="text" name="nome" placeholder="Seu nome completo" readonly value={nome}/>
         </div>
 
         <div class="row two-cols">
           <div>
             <label>E-mail</label>
-            <input type="email" name="email" placeholder="exemplo@dominio.com" readonly value={email}/>
+            <input type="email" name="email" placeholder="exemplo@dominio.com" readonly value="{email}" />
           </div>
 
           <div>
             <label>Telefone</label>
-            <input type="tel" name="telefone" placeholder="(xx) xxxxx-xxxx" readonly value={telefone}"/>
+            <input type="tel" name="telefone" placeholder="(xx) xxxxx-xxxx" readonly value="{telefone}" />
           </div>
         </div>
 
         <div class="row two-cols">
           <div>
             <label>Senha</label>
-            <input type="password" name="senha" placeholder="Mínimo 6 caracteres" readonly value={senha} />
+            <input type="password" name="senha" placeholder="Mínimo 6 caracteres" readonly value="{senha}" />
           </div>
 
           <div>
             <label>Confirmar senha</label>
-            <input type="password" name="confirmar" placeholder="Repita a senha" readonly value={confirmar} />
+            <input type="password" name="confirm" placeholder="Repita a senha" readonly value="{confirm}" />
           </div>
         </div>
 
