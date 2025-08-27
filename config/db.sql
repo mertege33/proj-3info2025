@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS perfil (
 
     insert into perfil values(null, 'Azul','Loiro','Sem divisão','A','+',0,0,'Brasileira',0,2,7,6); -- perfil do pai
     insert into perfil values(null, 'Castanho','Castanho','Sem divisão','A','+',0,0,'Brasileira',0,3,5,4); -- perfil do mae
-
+-- consulta 
  select u.id_usuario,
         u.nome,
         pe.id_perfil ,
