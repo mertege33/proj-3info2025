@@ -22,13 +22,14 @@ CREATE TABLE IF NOT EXISTS perfil (
   cov_bochecha tinyint NULL,
   albinismo tinyint NULL,
   nacionalidade VARCHAR(45) NULL,
-  doenca_genealogica tinyint NULL,
+  doenca_genealogica int NOT NULL,
   usuario_idusuario INT NOT NULL,
   id_pai INT NOT NULL,
   id_mae INT NOT NULL,
     FOREIGN KEY (usuario_idusuario) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY (id_pai) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY (id_mae) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION);
+    FOREIGN KEY (doenca_genealogica) REFERENCES doenca (id_doenca) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
     insert into usuario values(null, 'Nome teste','emailteste@mail.com', '12345678','123','2000-06-23','IFC','usuario teste');
     insert into usuario values(null, 'Pai teste','paiteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
@@ -51,6 +52,10 @@ CREATE TABLE IF NOT EXISTS perfil (
         (select p.nome from usuario p where p.id_usuario = pe.id_pai) as Pai
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario);
+
+CREATE TABLE IF NOT EXISTS doenca (
+  id_doenca INT PRIMARY KEY auto_increment,
+  nome VARCHAR(45) NOT NULL);   
    
 
 -- outro exemplo - dessa forma fica mais fácio carregar mais dados com menor qtd de transações
