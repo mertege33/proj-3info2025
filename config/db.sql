@@ -42,3 +42,6 @@ CREATE TABLE IF NOT EXISTS perfil (
     REFERENCES usuario (id_usuario)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+
+
+    
