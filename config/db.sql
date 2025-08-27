@@ -56,3 +56,17 @@ CREATE TABLE IF NOT EXISTS doenca (
   id_doenca INT PRIMARY KEY auto_increment,
   nome VARCHAR(45) NOT NULL);   
    
+
+-- outro exemplo - dessa forma fica mais fácio carregar mais dados com menor qtd de transações
+ select u.id_usuario,
+        u.nome,
+        pe.id_perfil ,
+        mae.nome as mae,
+        pai.nome as pai
+   from usuario u
+   inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
+   left outer join usuario mae on (mae.id_usuario = pe.id_mae)
+   left outer join usuario pai on (pai.id_usuario = pe.id_pai)
+        
+
+
