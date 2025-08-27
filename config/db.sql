@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS perfil (
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario);
    
 
--- outro exemplo - dessa forma fica mais fácio carregar mais dados com menor qtd de transações
+-- outro exemplo - dessa forma fica mais fácil carregar mais dados com menor qtd de transações
  select u.id_usuario,
         u.nome,
         pe.id_perfil ,
