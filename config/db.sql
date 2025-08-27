@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS perfil (
   fator ENUM('+','-') NULL,
   cov_queixo tinyint NULL,
   cov_bochecha tinyint NULL,
+  albinismo tinyint NULL,
   nacionalidade VARCHAR(45) NULL,
   doenca_genealogica tinyint NULL,
   usuario_idusuario INT NOT NULL,
@@ -40,8 +41,8 @@ CREATE TABLE IF NOT EXISTS perfil (
     insert into usuario values(null, 'Pai Pai teste','paipaiteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
     
 
-    insert into perfil values(null, 'Azul','Loiro','Sem divisão','A','+',0,0,'Brasileira',0,2,7,6); -- perfil do pai
-    insert into perfil values(null, 'Castanho','Castanho','Sem divisão','A','+',0,0,'Brasileira',0,3,5,4); -- perfil do mae
+    insert into perfil values(null, 'Azul','Loiro','Sem divisão','A','+',0,0,0,'Brasileira',0,2,7,6); -- perfil do pai
+    insert into perfil values(null, 'Castanho','Castanho','Sem divisão','A','+',0,0,0,'Brasileira',0,3,5,4); -- perfil do mae
 -- consulta 
  select u.id_usuario,
         u.nome,
@@ -51,3 +52,17 @@ CREATE TABLE IF NOT EXISTS perfil (
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario);
    
+
+-- outro exemplo - dessa forma fica mais fácio carregar mais dados com menor qtd de transações
+ select u.id_usuario,
+        u.nome,
+        pe.id_perfil ,
+        mae.nome as mae,
+        pai.nome as pai
+   from usuario u
+   inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
+   left outer join usuario mae on (mae.id_usuario = pe.id_mae)
+   left outer join usuario pai on (pai.id_usuario = pe.id_pai)
+        
+
+
