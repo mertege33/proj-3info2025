@@ -1,52 +1,53 @@
 create schema BioLineage;
+use BioLineage;
 
 CREATE TABLE IF NOT EXISTS usuario (
-  id_usuario INT NOT NULL,
+  id_usuario INT PRIMARY KEY  auto_increment,
   nome VARCHAR(45) NOT NULL,
   email VARCHAR(45) NULL,
   telefone VARCHAR(45) NULL,
   senha VARCHAR(45) NULL,
-  dataNascimento VARCHAR(45) NULL,
+  dataNascimento date NULL,
   Instituicao VARCHAR(45) NULL,
-  descricao VARCHAR(45) NULL,
-  
-  
-     
-  PRIMARY KEY (idusuario));
-
-
+  descricao VARCHAR(45) NULL);
 
 CREATE TABLE IF NOT EXISTS perfil (
-  id_perfil INT NOT NULL,
-  nome VARCHAR(45) NOT NULL,
-  cor_olho VARCHAR(45) NOT NULL,
-  cor_cabelo VARCHAR(45) NOT NULL,
-  tipo_sangue VARCHAR(45) NOT NULL,
-  tipo_orelha VARCHAR(45) NULL,
-  tipo_sanguineo VARCHAR(45) NULL,
-  cov_queixo VARCHAR(45) NULL,
-  cov_bochecha VARCHAR(45) NULL,
+  id_perfil INT  PRIMARY KEY auto_increment,
+  cor_olho ENUM('Azul','Castanho','Cinza','Preto','Verde') NOT NULL,
+  cor_cabelo ENUM('Branco','Castanho','Loiro','Preto','Ruivo') NOT NULL,
+  tipo_orelha ENUM ('Com divisão','Sem divisão') NULL,
+  tipo_sanguineo ENUM('A','B','AB','O') NULL,
+  fator ENUM('+','-') NULL,
+  cov_queixo tinyint NULL,
+  cov_bochecha tinyint NULL,
   nacionalidade VARCHAR(45) NULL,
-  doenca_genealogica VARCHAR(45) NULL,
-  usuariocol VARCHAR(45) NOT NULL,
-  usuariocol1 VARCHAR(45) NULL,
+  doenca_genealogica tinyint NULL,
   usuario_idusuario INT NOT NULL,
   id_pai INT NOT NULL,
   id_mae INT NOT NULL,
-  PRIMARY KEY (id_perfil),
+    FOREIGN KEY (usuario_idusuario) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    FOREIGN KEY (id_pai) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    FOREIGN KEY (id_mae) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION);
 
-  CONSTRAINT fk_perfil_usuario
-    FOREIGN KEY (usuario_id_usuario)
-    REFERENCES mydb.usuario (id_usuario)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT fk_perfil_usuario1
-    FOREIGN KEY (id_pai)
-    REFERENCES mydb.usuario (id_usuario)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT fk_perfil_usuario2
-    FOREIGN KEY (id_mae)
-    REFERENCES mydb.usuario (id_usuario)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
+    insert into usuario values(null, 'Nome teste','emailteste@mail.com', '12345678','123','2000-06-23','IFC','usuario teste');
+    insert into usuario values(null, 'Pai teste','paiteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
+    insert into usuario values(null, 'Mae teste','maeteste@mail.com', '12345678','123','1980-05-25','IFC','usuario teste');
+    insert into perfil values(null, 'Castanho','Castanho','Sem divisão','A','+',0,0,'Brasileira',0,1,2,3); -- perfil do teste
+    
+	insert into usuario values(null, 'Mãe Mãe teste','maemaeteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
+    insert into usuario values(null, 'Pai Mãe teste','paimaeteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
+    insert into usuario values(null, 'Mãe Pai teste','maepaiteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
+    insert into usuario values(null, 'Pai Pai teste','paipaiteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
+    
+
+    insert into perfil values(null, 'Azul','Loiro','Sem divisão','A','+',0,0,'Brasileira',0,2,7,6); -- perfil do pai
+    insert into perfil values(null, 'Castanho','Castanho','Sem divisão','A','+',0,0,'Brasileira',0,3,5,4); -- perfil do mae
+-- consulta 
+ select u.id_usuario,
+        u.nome,
+        pe.id_perfil ,
+        (select m.nome from usuario m where m.id_usuario = pe.id_mae) as Mae,
+        (select p.nome from usuario p where p.id_usuario = pe.id_pai) as Pai
+   from usuario u
+   inner join perfil pe on (pe.usuario_idusuario = u.id_usuario);
+   
