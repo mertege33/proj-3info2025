@@ -33,31 +33,25 @@ function dbFetchAll($sql, $params = []) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// --- configuração ---
-define('MAX_GEN', 6); // até quantas gerações subir (1=pais,2=avós,3=bisavós,...)
+define('MAX_GEN', 6); 
 $uid = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
-$treeNodes = [];   // nodes coletados
-$visited = [];     // evitar loops (id_usuario já visitado)
-$aggregate = [];   // nacionalidade => soma de pesos
+$treeNodes = [];   
+$visited = [];     
+$aggregate = [];  
 $totalWeight = 0.0;
 $usedNodesCount = 0;
 $error = null;
 
-// --- função recursiva para percorrer ancestrais ---
-// OBS: a função chama traverseAncestors para o pai e para a mãe,
-// portanto conta ambos os ramos (paterno e materno) e suas gerações.
 function traverseAncestors($userId, $generation = 1) {
     global $treeNodes, $visited, $aggregate, $totalWeight, $usedNodesCount;
 
     if ($userId <= 0) return;
     if ($generation > MAX_GEN) return;
-    if (isset($visited[$userId])) return; // evita ciclos
+    if (isset($visited[$userId])) return; 
     $visited[$userId] = true;
 
-    // Buscar perfil do usuário (nacionalidade, id_pai, id_mae)
     $profile = dbFetch("SELECT usuario_idusuario, id_pai, id_mae, nacionalidade FROM perfil WHERE usuario_idusuario = :uid LIMIT 1", [':uid' => $userId]);
 
-    // Buscar nome (se existir) na tabela usuario para apresentar
     $userRow = dbFetch("SELECT id_usuario, nome FROM usuario WHERE id_usuario = :uid LIMIT 1", [':uid' => $userId]);
 
     $node = [
@@ -72,49 +66,38 @@ function traverseAncestors($userId, $generation = 1) {
     $treeNodes[] = $node;
     $usedNodesCount++;
 
-    // se tiver nacionalidade, acumula com peso
     if ($node['nacionalidade']) {
-        $weight = pow(0.5, $generation); // geração 1 -> 0.5, 2 -> 0.25, etc
+        $weight = pow(0.5, $generation); 
         if (!isset($aggregate[$node['nacionalidade']])) $aggregate[$node['nacionalidade']] = 0.0;
         $aggregate[$node['nacionalidade']] += $weight;
         $totalWeight += $weight;
     }
 
-    // recursivamente para pai e mãe
     if ($node['id_pai'] && $node['id_pai'] !== 0) traverseAncestors($node['id_pai'], $generation + 1);
     if ($node['id_mae'] && $node['id_mae'] !== 0) traverseAncestors($node['id_mae'], $generation + 1);
 }
 
-// --- execução principal ---
 if ($uid > 0) {
-    // primeiro: verificar se o usuário existe (na tabela usuario)
     $exists = dbFetch("SELECT id_usuario, nome FROM usuario WHERE id_usuario = :uid LIMIT 1", [':uid' => $uid]);
     if (!$exists) {
         $error = "Usuário com user_id = {$uid} não encontrado.";
     } else {
-        // iniciar travessia a partir dos pais do usuário (geração 1)
-        // para pegar pais, usamos o perfil do próprio usuário para descobrir id_pai / id_mae
         $perfilUsuario = dbFetch("SELECT id_pai, id_mae, nacionalidade FROM perfil WHERE usuario_idusuario = :uid LIMIT 1", [':uid' => $uid]);
 
         if ($perfilUsuario) {
             $pai = (int)$perfilUsuario['id_pai'];
             $mae = (int)$perfilUsuario['id_mae'];
 
-            // se não existirem pais registrados, podemos tentar usar a nacionalidade do próprio perfil como fallback
             if (($pai <= 0 && $mae <= 0) && (!isset($perfilUsuario['nacionalidade']) || trim($perfilUsuario['nacionalidade']) === '')) {
                 $error = "Nenhum ancestral encontrado (id_pai/id_mae ausentes) e sem nacionalidade no perfil do usuário.";
             } else {
-                // percorrer cada pai/mãe se existir; geração 1
                 if ($pai > 0) traverseAncestors($pai, 1);
                 if ($mae > 0) traverseAncestors($mae, 1);
 
-                // Caso não tenham nacionalidades nos ancestrais (totalWeight == 0) mas o próprio perfil tem nacionalidade,
-                // fazer fallback: usar nacionalidade do próprio usuário com 100%
                 if ($totalWeight == 0.0) {
                     if (isset($perfilUsuario['nacionalidade']) && trim($perfilUsuario['nacionalidade']) !== '') {
-                        $aggregate[$perfilUsuario['nacionalidade']] = 1.0; // peso arbitrário antes de normalizar
+                        $aggregate[$perfilUsuario['nacionalidade']] = 1.0; 
                         $totalWeight = 1.0;
-                        // também adicionar como node para exibição
                         $treeNodes[] = [
                             'id' => $uid,
                             'nome' => $exists['nome'] ?? null,
@@ -124,29 +107,24 @@ if ($uid > 0) {
                             'id_mae' => null,
                         ];
                     } else {
-                        // nenhum dado disponível
                         $error = "Nenhuma nacionalidade encontrada nos ancestrais, nem nacionalidade do próprio perfil.";
                     }
                 }
             }
         } else {
-            // sem perfil do usuário — podemos tentar mensagem mais amigável
             $error = "Perfil do usuário não encontrado. Para calcular ancestrais é preciso que exista um registro em `perfil` ligado ao usuário.";
         }
     }
 }
 
-// --- normalizar para porcentagens (100%) ---
 $percentages = [];
 if (!$error && $totalWeight > 0) {
     foreach ($aggregate as $country => $w) {
         $percentages[$country] = ($w / $totalWeight) * 100.0;
     }
-    // ordernar por maior
     arsort($percentages);
 }
 
-// --- função para renderizar árvore HTML indentada (gera <ul>) ---
 function renderTreeHTML($nodes) {
     $html = '<div class="tree-raw" style="margin-top:12px;">';
     $html .= '<h4>Árvore de ancestrais (visual)</h4>';
@@ -177,24 +155,149 @@ function renderTreeHTML($nodes) {
   <link rel="stylesheet" href="../../public/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>
-    .orig-card { max-width:1100px; margin:110px auto; padding:22px; border-radius:12px; background: rgba(10,10,10,0.6); }
-    .controls { display:flex; gap:8px; margin-bottom:12px; align-items:center; }
-    .country-item { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed rgba(255,255,255,0.04); }
-    .meta { color:#dfeff1; margin-top:10px; font-size:14px; }
+    :root{
+      --bg-900: #071018; 
+      --card-bg: rgba(12,16,20,0.64);
+      --card-glow: rgba(255,255,255,0.03);
+      --muted: #dfeff1;
+      --muted-2: #aebfc6;
+      --accent: #c98a58; 
+      --accent-2: #8b5e3c;
+      --glass-border: rgba(255,255,255,0.06);
+      --radius: 12px;
+      --shadow: 0 10px 30px rgba(2,6,10,0.6);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,#page-module-template{height:100%}
+    body{
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: var(--bg-900);
+      color:var(--muted);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+
+    .background-video{
+      position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+    }
+    .background-video video{
+      width:100%; height:100%; object-fit:cover; display:block;
+      filter: blur(2px) brightness(0.45) saturate(0.95);
+      transform: scale(1.03);
+    }
+
+    .overlay{
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+      background: linear-gradient(180deg, rgba(6,10,14,0.28) 0%, rgba(4,8,12,0.7) 75%);
+    }
+
+    main{
+      position:relative; z-index:2; min-height:100vh; display:flex; align-items:flex-start; justify-content:center;
+      padding:48px 20px 120px; 
+    }
+
+    .orig-card{
+      width:100%; max-width:1100px; margin:40px auto; padding:26px; border-radius:var(--radius);
+      background: linear-gradient(180deg, rgba(18,22,26,0.62), rgba(8,10,12,0.64));
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px) saturate(1.06);
+    }
+
+    .orig-card h2{ font-size:22px; margin-bottom:6px; color:#fff; letter-spacing:0.2px }
+    .orig-card .subtitle{ color:var(--muted-2); font-size:14px; margin-bottom:14px }
+
+    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+    .controls input[name="user_id"]{
+      min-width:140px; max-width:260px; padding:10px 12px; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);
+      color:var(--muted); outline:none; transition:box-shadow 160ms, transform 120ms;
+    }
+    .controls input::placeholder{ color: rgba(223,239,241,0.45) }
+    .controls input:focus{ box-shadow: 0 6px 18px rgba(137,92,63,0.08); transform:translateY(-1px) }
+
+    .btn{ padding:9px 12px; border-radius:10px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; text-decoration:none }
+    .btn:focus{ outline:2px solid rgba(201,138,90,0.18); outline-offset:2px }
+
+    .btn.primary{
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color:#fff; border:none; box-shadow: 0 8px 22px rgba(201,138,90,0.14);
+    }
+    .btn.primary:hover{ transform:translateY(-2px) }
+
+    .btn.ghost{
+      background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.06)
+    }
+    .btn.ghost:hover{ background: rgba(255,255,255,0.02); transform:translateY(-1px) }
+
+    .meta{ color:var(--muted-2); margin-top:10px; font-size:14px }
+
+    .country-item{
+      display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-radius:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.02); margin-bottom:8px; font-size:14px; color:var(--muted);
+    }
+    .country-item div:first-child{ max-width:68% ; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+    .country-item div:last-child{ font-weight:700 }
+
+    .tree-raw{ margin-top:12px; padding:12px; border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border:1px solid rgba(255,255,255,0.02) }
+    .tree-raw h4{ margin-bottom:8px; font-size:15px }
+    .tree-raw > div{ max-height:320px; overflow:auto; padding-right:6px }
+    .tree-raw div::-webkit-scrollbar{ width:8px }
+    .tree-raw div::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.03); border-radius:6px }
+    .tree-raw strong{ color:#fff }
+
+    .orig-chart-wrap{
+      width:360px;
+      max-width:100%;
+      height:360px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      margin:0 auto;
+    }
+    #pie{
+      width:100% !important;
+      height:100% !important;
+      border-radius:50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      box-shadow: 0 8px 26px rgba(2,6,10,0.45);
+      display:block;
+    }
+
+    [role="alert"]{ padding:10px 12px; border-radius:8px; background: linear-gradient(90deg, rgba(255,20,20,0.06), rgba(255,255,255,0.01)); color:#ffd1d1 }
+
+    @media (max-width:920px){
+      .orig-card{ margin:18px 12px; padding:20px }
+      main{ padding-top:28px }
+      .orig-card h2{ font-size:20px }
+      .country-item{ font-size:13px }
+      .orig-chart-wrap{ height:340px }
+    }
+
+    @media (max-width:640px){
+      .controls{ gap:8px }
+      .controls input[name="user_id"]{ width:100%; flex:1 1 auto }
+      .orig-card{ padding:18px }
+      .tree-raw > div{ max-height:220px }
+      .orig-card > div > div{ flex-direction:column }
+      .orig-chart-wrap{ width:100%; height:300px }
+    }
+
+    .country-item, .btn, .controls input, .orig-card{ transition: all 140ms ease }
+
+    .text-muted{ color:var(--muted-2) }
+    .small{ font-size:13px }
   </style>
 </head>
 <body id="page-module-template">
-  <header class="topbar" role="navigation">
-    <nav class="nav-inner">
-      <a href="../cadastro_menu_login/View/homescreen.html" class="nav-link">Home</a>
-      <a href="/public/menu.html" class="nav-link">Menu</a>
-      <a href="/public/tampletes.html" class="nav-link">Templates</a>
-    </nav>
-  </header>
 
   <div class="background-video" aria-hidden="true">
     <video autoplay loop muted playsinline>
-      <source src="/public/218955.mp4" type="video/mp4" />
+      <source src="../../../public/img/fundo_da_tela.mp4" type="video/mp4" />
     </video>
   </div>
   <div class="overlay" aria-hidden="true"></div>
@@ -231,7 +334,9 @@ function renderTreeHTML($nodes) {
             </div>
 
             <div style="width:360px; flex:0 0 360px; text-align:center;">
-              <canvas id="pie" width="320" height="320" aria-label="Gráfico de pizza"></canvas>
+              <div class="orig-chart-wrap">
+                <canvas id="pie" aria-label="Gráfico de pizza"></canvas>
+              </div>
               <div style="margin-top:12px; color:#dfeff1; font-size:13px;">Gráfico gerado a partir das porcentagens normalizadas.</div>
             </div>
           </div>
@@ -241,10 +346,32 @@ function renderTreeHTML($nodes) {
             const labels = Object.keys(breakdown);
             const values = labels.map(l => parseFloat(breakdown[l].toFixed(2)));
             const ctx = document.getElementById('pie').getContext('2d');
+
             new Chart(ctx, {
               type: 'pie',
               data: { labels: labels, datasets: [{ data: values }] },
-              options: { plugins: { legend: { position: 'bottom' } } }
+              options: {
+                maintainAspectRatio: false,
+                layout: { padding: { bottom: 24 } },
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: {
+                      boxWidth: 12,
+                      padding: 10,
+                      usePointStyle: true
+                    }
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        const val = context.raw;
+                        return context.label + ': ' + val.toFixed(2) + '%';
+                      }
+                    }
+                  }
+                }
+              }
             });
           </script>
 
