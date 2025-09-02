@@ -68,4 +68,21 @@ CREATE TABLE IF NOT EXISTS perfil (
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario);
    
+<<<<<<< HEAD
 >>>>>>> ffbc6b346a0c95117008cc5a4aa562e94771b99b
+=======
+
+-- outro exemplo - dessa forma fica mais fácio carregar mais dados com menor qtd de transações
+ select u.id_usuario,
+        u.nome,
+        pe.id_perfil ,
+        mae.nome as mae,
+        pai.nome as pai
+   from usuario u
+   inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
+   left outer join usuario mae on (mae.id_usuario = pe.id_mae)
+   left outer join usuario pai on (pai.id_usuario = pe.id_pai)
+        
+
+
+>>>>>>> b547cd3edc8069b6121699a8b04ea364d02cb5bb
