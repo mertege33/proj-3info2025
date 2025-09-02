@@ -12,11 +12,14 @@ CREATE TABLE IF NOT EXISTS usuario (
   descricao VARCHAR(45) NULL);
 
 CREATE TABLE IF NOT EXISTS perfil (
+  sexo ENUM('Feminino','Masculino','Não Binário','Outro') NOT NULL,
   id_perfil INT  PRIMARY KEY auto_increment,
   cor_olho ENUM('Azul','Castanho','Cinza','Preto','Verde') NOT NULL,
   cor_cabelo ENUM('Branco','Castanho','Loiro','Preto','Ruivo') NOT NULL,
   tipo_orelha ENUM ('Com divisão','Sem divisão') NULL,
   tipo_sanguineo ENUM('A','B','AB','O') NULL,
+  daltonismo ENUM('Sim','Não') NULL,
+  sardas ENUM('Sim','Não') NULL,
   fator ENUM('+','-') NULL,
   cov_queixo tinyint NULL,
   cov_bochecha tinyint NULL,
@@ -31,6 +34,7 @@ CREATE TABLE IF NOT EXISTS perfil (
     FOREIGN KEY (id_mae) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION);
     FOREIGN KEY (doenca_genealogica) REFERENCES doenca (id_doenca) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+-- dados de teste
     insert into usuario values(null, 'Nome teste','emailteste@mail.com', '12345678','123','2000-06-23','IFC','usuario teste');
     insert into usuario values(null, 'Pai teste','paiteste@mail.com', '12345678','123','1975-01-15','IFC','usuario teste');
     insert into usuario values(null, 'Mae teste','maeteste@mail.com', '12345678','123','1980-05-25','IFC','usuario teste');
@@ -58,7 +62,7 @@ CREATE TABLE IF NOT EXISTS doenca (
   nome VARCHAR(45) NOT NULL);   
    
 
--- outro exemplo - dessa forma fica mais fácil carregar mais dados com menor qtd de transações
+-- outro exemplo - dessa forma fica mais fácio carregar mais dados com menor qtd de transações
  select u.id_usuario,
         u.nome,
         pe.id_perfil ,
@@ -66,8 +70,4 @@ CREATE TABLE IF NOT EXISTS doenca (
         pai.nome as pai
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
-   left outer join usuario mae on (mae.id_usuario = pe.id_mae)
-   left outer join usuario pai on (pai.id_usuario = pe.id_pai)
-        
-
-
+   left outer join usuario mae on (mae.id_usuario = pe.id_mae);
