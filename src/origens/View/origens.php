@@ -1,12 +1,12 @@
 <?php
-
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 $possibleDbPaths = [
-    __DIR__ . '/../../DAO/Database.class.php',        
+    __DIR__ . '/../../DAO/Database.class.php',
     __DIR__ . '/../DAO/Database.class.php',
     __DIR__ . '/../../../src/DAO/Database.class.php',
+    __DIR__ . '/DAO/Database.class.php',
 ];
 
 $dbIncluded = false;
@@ -21,120 +21,60 @@ if (!$dbIncluded) {
     die("Database.class.php não encontrado. Procurei em:\n" . implode("\n", $possibleDbPaths));
 }
 
-function dbFetch($sql, $params = []) {
-    $stmt = Database::executar($sql, $params);
-    if ($stmt === false) return false;
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+$possibleOrigensPaths = [
+    __DIR__ . '/Origens.class.php',              
+    __DIR__ . '/../Model/Origens.class.php',     
+    __DIR__ . '/../../Model/Origens.class.php',  
+    __DIR__ . '/../Origens.class.php',            
+    dirname(__DIR__) . '/Model/Origens.class.php',
+    __DIR__ . '/Model/Origens.class.php',
+];
+
+$origensIncluded = false;
+foreach ($possibleOrigensPaths as $p) {
+    if (file_exists($p)) {
+        require_once $p;
+        $origensIncluded = true;
+        break;
+    }
 }
 
-function dbFetchAll($sql, $params = []) {
-    $stmt = Database::executar($sql, $params);
-    if ($stmt === false) return [];
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (!$origensIncluded) {
+    $tried = implode("\n", $possibleOrigensPaths);
+    die("Origens.class.php não encontrado. Procurei em:\n" . $tried . "\n\n__DIR__ = " . __DIR__ . "\ngetcwd() = " . getcwd());
 }
 
-define('MAX_GEN', 6); 
+define('MAX_GEN', 6);
 $uid = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
-$treeNodes = [];   
-$visited = [];     
-$aggregate = [];  
-$totalWeight = 0.0;
+
+$percentages = [];
+$treeNodes = [];
 $usedNodesCount = 0;
 $error = null;
 
-function traverseAncestors($userId, $generation = 1) {
-    global $treeNodes, $visited, $aggregate, $totalWeight, $usedNodesCount;
-
-    if ($userId <= 0) return;
-    if ($generation > MAX_GEN) return;
-    if (isset($visited[$userId])) return; 
-    $visited[$userId] = true;
-
-    $profile = dbFetch("SELECT usuario_idusuario, id_pai, id_mae, nacionalidade FROM perfil WHERE usuario_idusuario = :uid LIMIT 1", [':uid' => $userId]);
-
-    $userRow = dbFetch("SELECT id_usuario, nome FROM usuario WHERE id_usuario = :uid LIMIT 1", [':uid' => $userId]);
-
-    $node = [
-        'id' => $userId,
-        'nome' => $userRow ? $userRow['nome'] : null,
-        'nacionalidade' => $profile && trim($profile['nacionalidade'] ?? '') !== '' ? $profile['nacionalidade'] : null,
-        'generation' => $generation,
-        'id_pai' => $profile ? (int)$profile['id_pai'] : null,
-        'id_mae' => $profile ? (int)$profile['id_mae'] : null,
-    ];
-
-    $treeNodes[] = $node;
-    $usedNodesCount++;
-
-    if ($node['nacionalidade']) {
-        $weight = pow(0.5, $generation); 
-        if (!isset($aggregate[$node['nacionalidade']])) $aggregate[$node['nacionalidade']] = 0.0;
-        $aggregate[$node['nacionalidade']] += $weight;
-        $totalWeight += $weight;
-    }
-
-    if ($node['id_pai'] && $node['id_pai'] !== 0) traverseAncestors($node['id_pai'], $generation + 1);
-    if ($node['id_mae'] && $node['id_mae'] !== 0) traverseAncestors($node['id_mae'], $generation + 1);
-}
-
 if ($uid > 0) {
-    $exists = dbFetch("SELECT id_usuario, nome FROM usuario WHERE id_usuario = :uid LIMIT 1", [':uid' => $uid]);
-    if (!$exists) {
-        $error = "Usuário com user_id = {$uid} não encontrado.";
-    } else {
-        $perfilUsuario = dbFetch("SELECT id_pai, id_mae, nacionalidade FROM perfil WHERE usuario_idusuario = :uid LIMIT 1", [':uid' => $uid]);
+    try {
+        $origens = new Origens($uid, MAX_GEN);
+        $origens->calcular();
 
-        if ($perfilUsuario) {
-            $pai = (int)$perfilUsuario['id_pai'];
-            $mae = (int)$perfilUsuario['id_mae'];
-
-            if (($pai <= 0 && $mae <= 0) && (!isset($perfilUsuario['nacionalidade']) || trim($perfilUsuario['nacionalidade']) === '')) {
-                $error = "Nenhum ancestral encontrado (id_pai/id_mae ausentes) e sem nacionalidade no perfil do usuário.";
-            } else {
-                if ($pai > 0) traverseAncestors($pai, 1);
-                if ($mae > 0) traverseAncestors($mae, 1);
-
-                if ($totalWeight == 0.0) {
-                    if (isset($perfilUsuario['nacionalidade']) && trim($perfilUsuario['nacionalidade']) !== '') {
-                        $aggregate[$perfilUsuario['nacionalidade']] = 1.0; 
-                        $totalWeight = 1.0;
-                        $treeNodes[] = [
-                            'id' => $uid,
-                            'nome' => $exists['nome'] ?? null,
-                            'nacionalidade' => $perfilUsuario['nacionalidade'],
-                            'generation' => 0,
-                            'id_pai' => null,
-                            'id_mae' => null,
-                        ];
-                    } else {
-                        $error = "Nenhuma nacionalidade encontrada nos ancestrais, nem nacionalidade do próprio perfil.";
-                    }
-                }
-            }
-        } else {
-            $error = "Perfil do usuário não encontrado. Para calcular ancestrais é preciso que exista um registro em `perfil` ligado ao usuário.";
-        }
+        $percentages = $origens->getPercentuais();
+        $treeNodes = $origens->getTree();
+        $usedNodesCount = count($treeNodes);
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
 }
 
-$percentages = [];
-if (!$error && $totalWeight > 0) {
-    foreach ($aggregate as $country => $w) {
-        $percentages[$country] = ($w / $totalWeight) * 100.0;
-    }
-    arsort($percentages);
-}
-
-function renderTreeHTML($nodes) {
+function renderTreeHTML(array $nodes) {
     $html = '<div class="tree-raw" style="margin-top:12px;">';
     $html .= '<h4>Árvore de ancestrais (visual)</h4>';
     $html .= '<div style="font-size:13px; color:#dfeff1;">';
-    usort($nodes, function($a,$b){ return $a['generation'] <=> $b['generation']; });
+    usort($nodes, function($a,$b){ return ($a['generation'] ?? 0) <=> ($b['generation'] ?? 0); });
     foreach ($nodes as $n) {
-        $gen = (int)$n['generation'];
+        $gen = (int)($n['generation'] ?? 0);
         $indent = max(0, $gen - 1) * 18;
-        $name = $n['nome'] ? htmlspecialchars($n['nome']) : "Usuário #".htmlspecialchars($n['id']);
-        $nat = $n['nacionalidade'] ? htmlspecialchars($n['nacionalidade']) : '<span style="opacity:0.7">— não informado —</span>';
+        $name = !empty($n['nome']) ? htmlspecialchars($n['nome']) : "Usuário #".htmlspecialchars($n['id'] ?? '');
+        $nat = !empty($n['nacionalidade']) ? htmlspecialchars($n['nacionalidade']) : '<span style="opacity:0.7">— não informado —</span>';
         $html .= "<div style='padding-left:{$indent}px; margin-bottom:8px; display:flex; gap:10px; align-items:center;'>";
         $html .= "<div style='min-width:220px'><strong>{$name}</strong></div>";
         $html .= "<div style='width:160px'>Nacionalidade: {$nat}</div>";
@@ -145,7 +85,8 @@ function renderTreeHTML($nodes) {
     return $html;
 }
 
-?><!doctype html>
+?>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -324,9 +265,13 @@ function renderTreeHTML($nodes) {
               <h3>Porcentagem estimada por nacionalidade</h3>
               <div class="meta">Baseado em <strong><?= $usedNodesCount ?></strong> nó(s) analisado(s) — pesos por geração (pais: 50%, avós: 25%, ...).</div>
               <div style="margin-top:12px;">
-                <?php foreach ($percentages as $country => $pct): ?>
-                  <div class="country-item"><div><?= htmlspecialchars($country) ?></div><div><?= number_format((float)$pct, 2, ',', '.') ?>%</div></div>
-                <?php endforeach; ?>
+                <?php if (!empty($percentages)): ?>
+                  <?php foreach ($percentages as $country => $pct): ?>
+                    <div class="country-item"><div><?= htmlspecialchars($country) ?></div><div><?= number_format((float)$pct, 2, ',', '.') ?>%</div></div>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <div class="meta small text-muted">Nenhuma nacionalidade disponível para exibir.</div>
+                <?php endif; ?>
               </div>
 
               <?= renderTreeHTML($treeNodes) ?>
