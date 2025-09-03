@@ -1,26 +1,16 @@
-<<<<<<< HEAD
 -- CRIA O BANCO
 CREATE SCHEMA IF NOT EXISTS BioLineage;
 USE BioLineage;
-=======
-create schema BioLineage;
-use BioLineage;
->>>>>>> origin/PrevisãoTipoSanguíneo
 
 -- ==========================
 -- TABELA USUÁRIO
 -- ==========================
 CREATE TABLE IF NOT EXISTS usuario (
-<<<<<<< HEAD
   id_usuario INT PRIMARY KEY AUTO_INCREMENT,
-=======
-  id_usuario INT PRIMARY KEY  auto_increment,
->>>>>>> origin/PrevisãoTipoSanguíneo
   nome VARCHAR(45) NOT NULL,
   email VARCHAR(45) NULL,
   telefone VARCHAR(45) NULL,
   senha VARCHAR(45) NULL,
-<<<<<<< HEAD
   dataNascimento DATE NULL,
   instituicao VARCHAR(45) NULL,
   descricao VARCHAR(45) NULL
@@ -36,11 +26,10 @@ CREATE TABLE IF NOT EXISTS doenca (
 
 -- Inserindo pelo menos 1 doença para evitar erro de FK
 INSERT INTO doenca (nome) VALUES ('Nenhuma');
-=======
-  dataNascimento date NULL,
-  Instituicao VARCHAR(45) NULL,
-  descricao VARCHAR(45) NULL);
->>>>>>> origin/PrevisãoTipoSanguíneo
+
+--  dataNascimento date NULL,
+--  Instituicao VARCHAR(45) NULL,
+--  descricao VARCHAR(45) NULL);
 
 -- ==========================
 -- TABELA PERFIL
@@ -54,11 +43,8 @@ CREATE TABLE IF NOT EXISTS perfil (
   tipo_sanguineo ENUM('A','B','AB','O') NULL,
   daltonismo ENUM('Sim','Não') NULL,
   sardas ENUM('Sim','Não') NULL,
-<<<<<<< HEAD
   daltonismo ENUM('Sim','Não') NULL,
   sardas ENUM('Sim','Não') NULL,
-=======
->>>>>>> origin/PrevisãoTipoSanguíneo
   fator ENUM('+','-') NULL,
   cov_queixo tinyint NULL,
   cov_bochecha tinyint NULL,
@@ -68,11 +54,8 @@ CREATE TABLE IF NOT EXISTS perfil (
   usuario_idusuario INT NOT NULL,
   id_pai INT NOT NULL,
   id_mae INT NOT NULL,
-<<<<<<< HEAD
   alelo_pai varchar(45),
   alelo_mae varchar(45),
-=======
->>>>>>> origin/PrevisãoTipoSanguíneo
     FOREIGN KEY (usuario_idusuario) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY (id_pai) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY (id_mae) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION);
@@ -101,36 +84,21 @@ CREATE TABLE IF NOT EXISTS perfil (
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario);
 
-CREATE TABLE IF NOT EXISTS doenca (
-  id_doenca INT PRIMARY KEY auto_increment,
-  nome VARCHAR(45) NOT NULL);   
-   
-
 -- outro exemplo - dessa forma fica mais fácio carregar mais dados com menor qtd de transações
  select u.id_usuario,
         u.nome,
         pe.id_perfil ,
         mae.nome as mae,
-<<<<<<< HEAD
         mae.doenca_genealogica, 
         pai.nome as pai
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
-<<<<<<< HEAD
    left outer join usuario mae on (mae.id_usuario = pe.id_mae);
-=======
    left outer join usuario mae on (mae.id_usuario = pe.id_mae)
    left outer join usuario pai on (pai.id_usuario = pe.id_pai)
    left outer join doenca dm on (d.id_doenca = mae.doenca_genealogica)
    left outer join doenca dp on (d.id_doenca = pai.doenca_genealogica)
    where u.id_usuario = 1;
-        
->>>>>>> origin/Doenças
-
-
-   --banco da galeria
-CREATE DATABASE galeria;
-USE galeria;
 
 CREATE TABLE cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -138,9 +106,11 @@ CREATE TABLE cards (
     imagem VARCHAR(255) NOT NULL,
     link VARCHAR(255) NOT NULL
 );
-=======
+
+select 
+        mae.nome as mae,
         pai.nome as pai
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
    left outer join usuario mae on (mae.id_usuario = pe.id_mae);
->>>>>>> origin/PrevisãoTipoSanguíneo
+   left outer join usuario pai on (pai.id_usuario = pe.id_pai);
