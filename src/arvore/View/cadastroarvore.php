@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -48,33 +49,14 @@
             color: #374151;
         }
         
-        .carrier {
-            background-color: #f3f4f6;
+        .presence {
+            background-color: #10b981;
             border: 2px solid #374151;
             border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .carrier::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #10b981;
-            clip-path: polygon(0% 0%, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
         }
         
         .absence {
             background-color: #1f2937;
-            border: 2px solid #374151;
-            border-radius: 50%;
-        }
-        
-        .presence {
-            background-color: #10b981;
             border: 2px solid #374151;
             border-radius: 50%;
         }
@@ -99,6 +81,13 @@
             width: 20px;
             height: 2px;
             background-color: #374151;
+            position: absolute;
+            z-index: 2;
+        }
+        
+        .sibling-line {
+            height: 2px;
+            background-color: #6366f1;
             position: absolute;
             z-index: 2;
         }
@@ -128,7 +117,7 @@
             margin: 10% auto;
             padding: 20px;
             border-radius: 8px;
-            width: 500px;
+            width: 600px;
             max-width: 90%;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -156,7 +145,20 @@
             color: #374151;
         }
         
-        input[type="text"], select, input[type="number"] {
+        .row {
+            margin-bottom: 15px;
+        }
+        
+        .two-cols {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .two-cols > div {
+            flex: 1;
+        }
+        
+        input[type="text"], select, textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #d1d5da;
@@ -164,18 +166,70 @@
             box-sizing: border-box;
         }
         
-        button {
-            background-color: #10b981;
+        .select {
             color: white;
+            background-color: #222;
+            padding: 8px;
+            border: 1px solid #d1d5da;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .checkbox-group, .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        
+        .checkbox-label, .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .checkbox-label input, .radio-label input {
+            margin: 0;
+        }
+        
+        textarea {
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
             padding: 10px 15px;
-            border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
         }
         
-        button:hover {
+        .btn.primary {
+            background-color: #10b981;
+            color: white;
+            border: none;
+        }
+        
+        .btn.ghost {
+            background-color: transparent;
+            color: #374151;
+            border: 1px solid #d1d5da;
+        }
+        
+        .btn.primary:hover {
             background-color: #059669;
+        }
+        
+        .btn.ghost:hover {
+            background-color: #f3f4f6;
         }
         
         .legend-item {
@@ -284,31 +338,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .relationship-form {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #f9fafb;
-            border-radius: 4px;
-            border: 1px solid #d1d5da;
-        }
-        
-        .relationship-select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5da;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        
-        .selected-person {
-            font-weight: bold;
-            color: #10b981;
-            margin-bottom: 10px;
-            padding: 5px;
-            background-color: #f0fdf4;
-            border-radius: 4px;
-        }
-        
         .connections-container {
             position: absolute;
             top: 0;
@@ -317,6 +346,13 @@
             height: 100%;
             pointer-events: none;
             z-index: 5;
+        }
+        
+        .sibling-group-line {
+            height: 2px;
+            background-color: #6366f1;
+            position: absolute;
+            z-index: 2;
         }
     </style>
 </head>
@@ -385,16 +421,16 @@
                     <span>Não porta o traço</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-icon carrier"></div>
-                    <span>Portador do traço</span>
-                </div>
-                <div class="legend-item">
                     <div style="width: 20px; height: 2px; background-color: #374151; margin-right: 8px;"></div>
                     <span>Linha de casamento</span>
                 </div>
                 <div class="legend-item">
                     <div style="width: 2px; height: 20px; background-color: #374151; margin-right: 8px;"></div>
                     <span>Linha de descendência</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 20px; height: 2px; background-color: #6366f1; margin-right: 8px;"></div>
+                    <span>Linha de irmãos</span>
                 </div>
             </div>
         </div>
@@ -413,81 +449,179 @@
             <div class="zoom-btn" id="zoom-in">+</div>
         </div>
 
-        <!-- Add Person Modal -->
-        <div id="add-person-modal" class="modal">
+        <!-- Add/Edit Person Modal -->
+        <div id="person-modal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2 class="text-xl font-bold mb-4">Adicionar Pessoa</h2>
-                <form id="person-form">
-                    <div class="form-group">
-                        <label for="name">Nome:</label>
-                        <input type="text" id="name" name="name" required>
+                <h2 class="text-xl font-bold mb-4">Informações Genealógicas</h2>
+                <form id="genealogicForm">
+                    <div class="row">
+                        <label for="nomeCompleto">Nome completo</label>
+                        <input type="text" id="nomeCompleto" name="nomeCompleto" placeholder="Seu nome completo" required />
                     </div>
-                    <div class="form-group">
-                        <label for="birth-year">Ano de Nascimento:</label>
-                        <input type="number" id="birth-year" name="birth-year" min="1800" max="2023">
-                    </div>
-                    <div class="form-group">
-                        <label for="death-year">Ano de Falecimento:</label>
-                        <input type="number" id="death-year" name="death-year" min="1800" max="2023">
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gênero:</label>
-                        <select id="gender" name="gender" required>
-                            <option value="male">Masculino</option>
-                            <option value="female">Feminino</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="trait">Porta o traço genético?</label>
-                        <select id="trait" name="trait">
-                            <option value="presence">Sim</option>
-                            <option value="absence">Não</option>
-                            <option value="carrier">Portador</option>
-                            <option value="none">Nenhum</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Adicionar</button>
-                </form>
-            </div>
-        </div>
 
-        <!-- Edit Person Modal -->
-        <div id="edit-person-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2 class="text-xl font-bold mb-4">Editar Pessoa</h2>
-                <form id="edit-person-form">
-                    <input type="hidden" id="edit-id">
-                    <div class="form-group">
-                        <label for="edit-name">Nome:</label>
-                        <input type="text" id="edit-name" name="edit-name" required>
+                    <div class="row two-cols">
+                        <div>
+                            <label for="corOlho">Cor do olho</label>
+                            <input type="text" id="corOlho" name="corOlho" placeholder="verde" required />
+                        </div>
+                        <div>
+                            <label for="corCabelo">Cor do cabelo</label>
+                            <input type="text" id="corCabelo" name="corCabelo" placeholder="loiro" required />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-birth-year">Ano de Nascimento:</label>
-                        <input type="number" id="edit-birth-year" name="edit-birth-year" min="1800" max="2023">
+
+                    <div class="row two-cols">
+                        <div>
+                            <label for="tipoSanguineo">Tipo sanguíneo</label>
+                            <select id="tipoSanguineo" name="tipoSanguineo" placeholder="Selecione" required class="select" style="color: white; background-color: #222;">
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="nacionalidade">País de Origem/Nacionalidade</label>
+                            <select id="nacionalidade" name="nacionalidade" required class="select" style="color: white; background-color: #222;">
+                                <option value="Afeganistão">Afeganistão</option>
+                                <option value="África do Sul">África do Sul</option>
+                                <option value="Albânia">Albânia</option>
+                                <option value="Alemanha">Alemanha</option>
+                                <option value="Andorra">Andorra</option>
+                                <option value="Angola">Angola</option>
+                                <option value="Arábia Saudita">Arábia Saudita</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Armênia">Armênia</option>
+                                <option value="Austrália">Austrália</option>
+                                <option value="Áustria">Áustria</option>
+                                <option value="Bahamas">Bahamas</option>
+                                <option value="Bangladesh">Bangladesh</option>
+                                <option value="Barbados">Barbados</option>
+                                <option value="Bélgica">Bélgica</option>
+                                <option value="Bolívia">Bolívia</option>
+                                <option value="Brasil">Brasil</option>
+                                <option value="Bulgária">Bulgária</option>
+                                <option value="Cabo Verde">Cabo Verde</option>
+                                <option value="Camarões">Camarões</option>
+                                <option value="Canadá">Canadá</option>
+                                <option value="Chile">Chile</option>
+                                <option value="China">China</option>
+                                <option value="Colômbia">Colômbia</option>
+                                <option value="Coreia do Sul">Coreia do Sul</option>
+                                <option value="Costa Rica">Costa Rica</option>
+                                <option value="Croácia">Croácia</option>
+                                <option value="Cuba">Cuba</option>
+                                <option value="Dinamarca">Dinamarca</option>
+                                <option value="Egito">Egito</option>
+                                <option value="El Salvador">El Salvador</option>
+                                <option value="Equador">Equador</option>
+                                <option value="Espanha">Espanha</option>
+                                <option value="Estados Unidos">Estados Unidos</option>
+                                <option value="Estônia">Estônia</option>
+                                <option value="Etiópia">Etiópia</option>
+                                <option value="Filipinas">Filipinas</option>
+                                <option value="Finlândia">Finlândia</option>
+                                <option value="França">França</option>
+                                <option value="Grécia">Grécia</option>
+                                <option value="Guatemala">Guatemala</option>
+                                <option value="Haiti">Haiti</option>
+                                <option value="Holanda">Holanda</option>
+                                <option value="Honduras">Honduras</option>
+                                <option value="Hungria">Hungria</option>
+                                <option value="Índia">Índia</option>
+                                <option value="Indonésia">Indonésia</option>
+                                <option value="Inglaterra">Inglaterra</option>
+                                <option value="Irlanda">Irlanda</option>
+                                <option value="Islândia">Islândia</option>
+                                <option value="Itália">Itália</option>
+                                <option value="Jamaica">Jamaica</option>
+                                <option value="Japão">Japão</option>
+                                <option value="Jordânia">Jordânia</option>
+                                <option value="Letônia">Letônia</option>
+                                <option value="Líbano">Líbano</option>
+                                <option value="Lituânia">Lituânia</option>
+                                <option value="Luxemburgo">Luxemburgo</option>
+                                <option value="Malásia">Malásia</option>
+                                <option value="Marrocos">Marrocos</option>
+                                <option value="México">México</option>
+                                <option value="Moçambique">Moçambique</option>
+                                <option value="Noruega">Noruega</option>
+                                <option value="Nova Zelândia">Nova Zelândia</option>
+                                <option value="Palestina">Palestina</option>
+                                <option value="Panamá">Panamá</option>
+                                <option value="Paraguai">Paraguai</option>
+                                <option value="Peru">Peru</option>
+                                <option value="Polônia">Polônia</option>
+                                <option value="Portugal">Portugal</option>
+                                <option value="Quênia">Quênia</option>
+                                <option value="Reino Unido">Reino Unido</option>
+                                <option value="República Dominicana">República Dominicana</option>
+                                <option value="Rojava">Rojava</option>
+                                <option value="Romênia">Romênia</option>
+                                <option value="Rússia">Rússia</option>
+                                <option value="Senegal">Senegal</option>
+                                <option value="Singapura">Singapura</option>
+                                <option value="Suécia">Suécia</option>
+                                <option value="Suíça">Suíça</option>
+                                <option value="Tailândia">Tailândia</option>
+                                <option value="Tanzânia">Tanzânia</option>
+                                <option value="Turquia">Turquia</option>
+                                <option value="Ucrânia">Ucrânia</option>
+                                <option value="Uganda">Uganda</option>
+                                <option value="Uruguai">Uruguai</option>
+                                <option value="Venezuela">Venezuela</option>
+                                <option value="Vietnã">Vietnã</option>
+                                <option value="Zapatistas">Zapatistas</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-death-year">Ano de Falecimento:</label>
-                        <input type="number" id="edit-death-year" name="edit-death-year" min="1800" max="2023">
+
+                    <div class="row two-cols">
+                        <div>
+                            <label for="covinhas">Covinhas</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="covinhas" value="buchechar" />
+                                    <span>Bucheca</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="covinhas" value="queixo" />
+                                    <span>Queixo</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="tipoOrelha">Tipo de orelha</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="tipoOrelha" value="solta" required />
+                                    <span>Solta</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="tipoOrelha" value="presa" />
+                                    <span>Presa</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-gender">Gênero:</label>
-                        <select id="edit-gender" name="edit-gender" required>
-                            <option value="male">Masculino</option>
-                            <option value="female">Feminino</option>
-                        </select>
+
+                    <div class="row">
+                        <label for="doencaGenealogica">Doença genealógica (opcional)</label>
+                        <textarea id="doencaGenealogica" name="doencaGenealogica" rows="3" 
+                                  placeholder="Ex.: Alzheimer, Hemofilia, Daltonismo..."></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-trait">Porta o traço genético?</label>
-                        <select id="edit-trait" name="edit-trait">
-                            <option value="presence">Sim</option>
-                            <option value="absence">Não</option>
-                            <option value="carrier">Portador</option>
-                            <option value="none">Nenhum</option>
-                        </select>
+
+                    <div class="form-actions">
+                        <a class="btn ghost" href="#" id="back-btn">Voltar</a>
+                        <button type="submit" class="btn primary">Cadastrar</button>
                     </div>
-                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Atualizar</button>
                 </form>
             </div>
         </div>
@@ -505,6 +639,7 @@
                             <option value="spouse">Cônjuge</option>
                             <option value="child">Filho/Filha</option>
                             <option value="parent">Pai/Mãe</option>
+                            <option value="sibling">Irmão/Irmã</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -523,7 +658,6 @@
                         <select id="related-person-trait" class="relationship-select">
                             <option value="presence">Sim</option>
                             <option value="absence">Não</option>
-                            <option value="carrier">Portador</option>
                             <option value="none">Nenhum</option>
                         </select>
                     </div>
@@ -545,25 +679,23 @@
         let treeOffsetY = 0;
         let zoomLevel = 100;
         let selectedPersonId = null;
-        let connections = [];
+        let editingPersonId = null;
 
         // DOM Elements
         const treeContainer = document.getElementById('tree-container');
         const familyTreeElement = document.getElementById('family-tree');
         const connectionsContainer = document.getElementById('connections-container');
         const dragHandle = document.getElementById('drag-handle');
-        const addPersonModal = document.getElementById('add-person-modal');
-        const editPersonModal = document.getElementById('edit-person-modal');
+        const personModal = document.getElementById('person-modal');
         const relationshipModal = document.getElementById('relationship-modal');
-        const personForm = document.getElementById('person-form');
-        const editPersonForm = document.getElementById('edit-person-form');
-        const relationshipForm = document.getElementById('relationship-form');
+        const genealogicForm = document.getElementById('genealogicForm');
         const closeModalBtns = document.querySelectorAll('.close');
         const zoomInBtn = document.getElementById('zoom-in');
         const zoomOutBtn = document.getElementById('zoom-out');
         const zoomLevelDisplay = document.getElementById('zoom-level');
         const addRelationshipBtn = document.getElementById('add-relationship-btn');
         const selectedPersonDisplay = document.getElementById('selected-person-display');
+        const backBtn = document.getElementById('back-btn');
 
         // Tools
         document.getElementById('select-tool').addEventListener('click', () => {
@@ -573,7 +705,7 @@
 
         document.getElementById('add-person-tool').addEventListener('click', () => {
             selectedTool = 'add-person';
-            openAddPersonModal();
+            openPersonModal(null);
             updateActiveTool();
         });
 
@@ -613,23 +745,42 @@
         }
 
         // Open modals
-        function openAddPersonModal() {
-            addPersonModal.style.display = 'block';
-            document.getElementById('name').value = '';
-            document.getElementById('birth-year').value = '';
-            document.getElementById('death-year').value = '';
-            document.getElementById('gender').value = 'male';
-            document.getElementById('trait').value = 'none';
-        }
-
-        function openEditPersonModal(person) {
-            editPersonModal.style.display = 'block';
-            document.getElementById('edit-id').value = person.id;
-            document.getElementById('edit-name').value = person.name;
-            document.getElementById('edit-birth-year').value = person.birthYear || '';
-            document.getElementById('edit-death-year').value = person.deathYear || '';
-            document.getElementById('edit-gender').value = person.gender;
-            document.getElementById('edit-trait').value = person.trait || 'none';
+        function openPersonModal(person = null) {
+            personModal.style.display = 'block';
+            editingPersonId = person ? person.id : null;
+            
+            if (person) {
+                // Fill form with existing data
+                document.getElementById('nomeCompleto').value = person.name || '';
+                document.getElementById('corOlho').value = person.eyeColor || '';
+                document.getElementById('corCabelo').value = person.hairColor || '';
+                document.getElementById('tipoSanguineo').value = person.bloodType || 'A+';
+                document.getElementById('nacionalidade').value = person.nationality || 'Brasil';
+                document.getElementById('doencaGenealogica').value = person.geneticDisease || '';
+                
+                // Handle checkboxes
+                const covinhasCheckboxes = document.querySelectorAll('input[name="covinhas"]');
+                covinhasCheckboxes.forEach(cb => cb.checked = false);
+                if (person.dimples && Array.isArray(person.dimples)) {
+                    person.dimples.forEach(dimple => {
+                        const checkbox = document.querySelector(`input[name="covinhas"][value="${dimple}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+                
+                // Handle radio buttons
+                const orelhaRadios = document.querySelectorAll('input[name="tipoOrelha"]');
+                orelhaRadios.forEach(radio => radio.checked = false);
+                if (person.earType) {
+                    const radio = document.querySelector(`input[name="tipoOrelha"][value="${person.earType}"]`);
+                    if (radio) radio.checked = true;
+                }
+            } else {
+                // Clear form for new person
+                genealogicForm.reset();
+                const orelhaRadios = document.querySelectorAll('input[name="tipoOrelha"]');
+                orelhaRadios[0].checked = true; // Default to "solta"
+            }
         }
 
         function openRelationshipModal(person) {
@@ -644,18 +795,14 @@
         // Close modals
         closeModalBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                addPersonModal.style.display = 'none';
-                editPersonModal.style.display = 'none';
+                personModal.style.display = 'none';
                 relationshipModal.style.display = 'none';
             });
         });
 
         window.addEventListener('click', (event) => {
-            if (event.target === addPersonModal) {
-                addPersonModal.style.display = 'none';
-            }
-            if (event.target === editPersonModal) {
-                editPersonModal.style.display = 'none';
+            if (event.target === personModal) {
+                personModal.style.display = 'none';
             }
             if (event.target === relationshipModal) {
                 relationshipModal.style.display = 'none';
@@ -663,14 +810,14 @@
         });
 
         // Form handlers
-        personForm.addEventListener('submit', (e) => {
+        genealogicForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            addPersonToTree();
+            savePersonData();
         });
 
-        editPersonForm.addEventListener('submit', (e) => {
+        backBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            editPersonInTree();
+            personModal.style.display = 'none';
         });
 
         addRelationshipBtn.addEventListener('click', () => {
@@ -719,7 +866,7 @@
 
         // Initial setup
         function initializeFamilyTree() {
-            // Create initial sample data
+            // Create initial sample data with all new fields
             const initialData = [
                 {
                     id: 1,
@@ -731,7 +878,14 @@
                     x: 400,
                     y: 100,
                     children: [3],
-                    spouse: 2
+                    spouse: 2,
+                    eyeColor: 'azul',
+                    hairColor: 'cinza',
+                    bloodType: 'O+',
+                    nationality: 'Estados Unidos',
+                    dimples: ['buchechar'],
+                    earType: 'solta',
+                    geneticDisease: 'Alzheimer'
                 },
                 {
                     id: 2,
@@ -739,11 +893,18 @@
                     birthYear: 1910,
                     deathYear: 2000,
                     gender: 'female',
-                    trait: 'carrier',
+                    trait: 'absence',
                     x: 600,
                     y: 100,
                     children: [3],
-                    spouse: 1
+                    spouse: 1,
+                    eyeColor: 'verde',
+                    hairColor: 'loiro',
+                    bloodType: 'A-',
+                    nationality: 'Canadá',
+                    dimples: ['queixo'],
+                    earType: 'presa',
+                    geneticDisease: ''
                 },
                 {
                     id: 3,
@@ -755,7 +916,14 @@
                     x: 500,
                     y: 200,
                     children: [5],
-                    spouse: 4
+                    spouse: 4,
+                    eyeColor: 'castanho',
+                    hairColor: 'preto',
+                    bloodType: 'B+',
+                    nationality: 'Estados Unidos',
+                    dimples: ['buchechar', 'queixo'],
+                    earType: 'solta',
+                    geneticDisease: 'Hemofilia'
                 },
                 {
                     id: 4,
@@ -763,11 +931,18 @@
                     birthYear: 1935,
                     deathYear: 2010,
                     gender: 'female',
-                    trait: 'none',
+                    trait: 'absence',
                     x: 700,
                     y: 200,
                     children: [5],
-                    spouse: 3
+                    spouse: 3,
+                    eyeColor: 'azul',
+                    hairColor: 'ruivo',
+                    bloodType: 'AB-',
+                    nationality: 'Inglaterra',
+                    dimples: [],
+                    earType: 'solta',
+                    geneticDisease: ''
                 },
                 {
                     id: 5,
@@ -779,18 +954,32 @@
                     x: 600,
                     y: 300,
                     children: [6, 7],
-                    spouse: 6
+                    spouse: 6,
+                    eyeColor: 'verde',
+                    hairColor: 'loiro',
+                    bloodType: 'O-',
+                    nationality: 'Estados Unidos',
+                    dimples: ['buchechar'],
+                    earType: 'presa',
+                    geneticDisease: 'Daltonismo'
                 },
                 {
                     id: 6,
                     name: 'Mary Harris',
                     birthYear: 1970,
                     gender: 'female',
-                    trait: 'none',
+                    trait: 'absence',
                     x: 700,
                     y: 300,
                     children: [5],
-                    spouse: 5
+                    spouse: 5,
+                    eyeColor: 'castanho',
+                    hairColor: 'castanho',
+                    bloodType: 'A+',
+                    nationality: 'Estados Unidos',
+                    dimples: [],
+                    earType: 'solta',
+                    geneticDisease: ''
                 },
                 {
                     id: 7,
@@ -801,7 +990,14 @@
                     x: 800,
                     y: 300,
                     children: [],
-                    spouse: null
+                    spouse: null,
+                    eyeColor: 'azul',
+                    hairColor: 'preto',
+                    bloodType: 'B-',
+                    nationality: 'Estados Unidos',
+                    dimples: ['queixo'],
+                    earType: 'solta',
+                    geneticDisease: ''
                 }
             ];
 
@@ -814,6 +1010,7 @@
             familyTree = [];
             currentId = 1;
             selectedPersonId = null;
+            editingPersonId = null;
             familyTreeElement.innerHTML = '';
             connectionsContainer.innerHTML = '';
             renderFamilyTree();
@@ -833,53 +1030,67 @@
             });
         }
 
-        function addPersonToTree() {
-            const formData = new FormData(personForm);
-            const person = {
-                id: currentId++,
-                name: formData.get('name'),
-                birthYear: formData.get('birth-year') ? parseInt(formData.get('birth-year')) : null,
-                deathYear: formData.get('death-year') ? parseInt(formData.get('death-year')) : null,
-                gender: formData.get('gender'),
-                trait: formData.get('trait'),
-                x: 200 + Math.random() * 600,
-                y: 200 + Math.random() * 400,
-                children: [],
-                spouse: null
-            };
-
-            familyTree.push(person);
-            renderFamilyTree();
-            addPersonModal.style.display = 'none';
-            personForm.reset();
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'Pessoa adicionada!',
-                text: 'A pessoa foi adicionada à árvore genealógica.'
+        function savePersonData() {
+            const formData = new FormData(genealogicForm);
+            const dimples = [];
+            document.querySelectorAll('input[name="covinhas"]:checked').forEach(cb => {
+                dimples.push(cb.value);
             });
-        }
 
-        function editPersonInTree() {
-            const formData = new FormData(editPersonForm);
-            const id = parseInt(formData.get('edit-id'));
-            const personIndex = familyTree.findIndex(p => p.id === id);
-            
-            if (personIndex !== -1) {
-                familyTree[personIndex].name = formData.get('edit-name');
-                familyTree[personIndex].birthYear = formData.get('edit-birth-year') ? parseInt(formData.get('edit-birth-year')) : null;
-                familyTree[personIndex].deathYear = formData.get('edit-death-year') ? parseInt(formData.get('edit-death-year')) : null;
-                familyTree[personIndex].gender = formData.get('edit-gender');
-                familyTree[personIndex].trait = formData.get('edit-trait');
-                
+            const dimplesValue = dimples.length > 0 ? dimples : null;
+
+            if (editingPersonId) {
+                // Edit existing person
+                const personIndex = familyTree.findIndex(p => p.id === editingPersonId);
+                if (personIndex !== -1) {
+                    familyTree[personIndex].name = formData.get('nomeCompleto');
+                    familyTree[personIndex].eyeColor = formData.get('corOlho');
+                    familyTree[personIndex].hairColor = formData.get('corCabelo');
+                    familyTree[personIndex].bloodType = formData.get('tipoSanguineo');
+                    familyTree[personIndex].nationality = formData.get('nacionalidade');
+                    familyTree[personIndex].dimples = dimplesValue;
+                    familyTree[personIndex].earType = formData.get('tipoOrelha');
+                    familyTree[personIndex].geneticDisease = formData.get('doencaGenealogica') || '';
+                    
+                    renderFamilyTree();
+                    personModal.style.display = 'none';
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pessoa atualizada!',
+                        text: 'As informações foram atualizadas com sucesso.'
+                    });
+                }
+            } else {
+                // Add new person
+                const person = {
+                    id: currentId++,
+                    name: formData.get('nomeCompleto'),
+                    birthYear: null,
+                    deathYear: null,
+                    gender: 'male', // Default to male, will be set properly in relationship
+                    trait: 'none',
+                    x: 200 + Math.random() * 600,
+                    y: 200 + Math.random() * 400,
+                    children: [],
+                    spouse: null,
+                    eyeColor: formData.get('corOlho'),
+                    hairColor: formData.get('corCabelo'),
+                    bloodType: formData.get('tipoSanguineo'),
+                    nationality: formData.get('nacionalidade'),
+                    dimples: dimplesValue,
+                    earType: formData.get('tipoOrelha'),
+                    geneticDisease: formData.get('doencaGenealogica') || ''
+                };
+
+                familyTree.push(person);
                 renderFamilyTree();
-                editPersonModal.style.display = 'none';
-                editPersonForm.reset();
+                personModal.style.display = 'none';
                 
                 Swal.fire({
                     icon: 'success',
-                    title: 'Pessoa atualizada!',
-                    text: 'As informações foram atualizadas com sucesso.'
+                    title: 'Pessoa adicionada!',
+                    text: 'A pessoa foi adicionada à árvore genealógica.'
                 });
             }
         }
@@ -929,7 +1140,14 @@
                 x: selectedPerson.x,
                 y: selectedPerson.y,
                 children: [],
-                spouse: null
+                spouse: null,
+                eyeColor: 'castanho',
+                hairColor: 'preto',
+                bloodType: 'A+',
+                nationality: 'Brasil',
+                dimples: null,
+                earType: 'solta',
+                geneticDisease: ''
             };
 
             // Adjust position based on relationship
@@ -941,6 +1159,20 @@
                 newPerson.y = selectedPerson.y - 120;
                 newPerson.x = selectedPerson.x + (Math.random() > 0.5 ? 100 : -100);
                 newPerson.children.push(selectedPerson.id);
+            } else if (relationshipType === 'sibling') {
+                // Find parent to position sibling correctly
+                const parent = familyTree.find(p => p.children && p.children.includes(selectedPersonId));
+                if (parent) {
+                    newPerson.y = selectedPerson.y;
+                    newPerson.x = parent.x + (parent.children.length * 80) - 40;
+                } else {
+                    newPerson.y = selectedPerson.y;
+                    newPerson.x = selectedPerson.x + 100;
+                }
+                // Add to same parent's children
+                if (parent) {
+                    parent.children.push(newPerson.id);
+                }
             } else { // spouse
                 newPerson.y = selectedPerson.y;
                 newPerson.x = selectedPerson.x + (selectedPerson.gender === 'male' ? 150 : -150);
@@ -956,8 +1188,18 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Relação adicionada!',
-                text: `A relação de ${relationshipType} foi criada com sucesso.`
+                text: `A relação de ${getRelationshipName(relationshipType)} foi criada com sucesso.`
             });
+        }
+
+        function getRelationshipName(type) {
+            const names = {
+                'spouse': 'cônjuge',
+                'child': 'filho/filha',
+                'parent': 'pai/mãe',
+                'sibling': 'irmão/irmã'
+            };
+            return names[type] || type;
         }
 
         function renderFamilyTree() {
@@ -986,7 +1228,7 @@
             node.style.left = `${person.x}px`;
             node.style.top = `${person.y}px`;
 
-            // Create the person shape
+            // Create the person shape based on gender
             const shape = document.createElement('div');
             shape.className = person.gender === 'male' ? 'male' : 'female';
             shape.textContent = person.name.charAt(0).toUpperCase();
@@ -996,8 +1238,6 @@
                 shape.classList.add('presence');
             } else if (person.trait === 'absence') {
                 shape.classList.add('absence');
-            } else if (person.trait === 'carrier') {
-                shape.classList.add('carrier');
             }
 
             // Add click event
@@ -1008,7 +1248,7 @@
                     document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
                     node.classList.add('selected');
                 } else if (selectedTool === 'edit') {
-                    openEditPersonModal(person);
+                    openPersonModal(person);
                 } else if (selectedTool === 'delete') {
                     Swal.fire({
                         title: 'Excluir pessoa?',
@@ -1033,7 +1273,7 @@
             node.addEventListener('dblclick', (e) => {
                 e.stopPropagation();
                 if (selectedTool !== 'edit') {
-                    openEditPersonModal(person);
+                    openPersonModal(person);
                 }
             });
 
@@ -1112,6 +1352,44 @@
                         }
                     });
                 }
+
+                // Draw sibling lines
+                if (person.children && person.children.length > 1) {
+                    // Group siblings together
+                    const siblings = person.children.map(childId => 
+                        familyTree.find(p => p.id === childId)
+                    ).filter(sibling => sibling !== undefined);
+                    
+                    if (siblings.length > 1) {
+                        // Sort siblings by x position
+                        siblings.sort((a, b) => a.x - b.x);
+                        
+                        // Draw line connecting all siblings
+                        const firstSibling = siblings[0];
+                        const lastSibling = siblings[siblings.length - 1];
+                        
+                        const siblingLine = document.createElement('div');
+                        siblingLine.className = 'connection-line sibling-line';
+                        siblingLine.style.left = `${firstSibling.x + 20}px`;
+                        siblingLine.style.top = `${firstSibling.y - 10}px`;
+                        siblingLine.style.width = `${lastSibling.x - firstSibling.x}px`;
+                        siblingLine.style.height = '2px';
+                        
+                        connectionsContainer.appendChild(siblingLine);
+                        
+                        // Draw vertical connectors from parent line to sibling line
+                        siblings.forEach(sibling => {
+                            const connector = document.createElement('div');
+                            connector.className = 'connection-line vertical-line';
+                            connector.style.left = `${sibling.x + 20}px`;
+                            connector.style.top = `${firstSibling.y - 10}px`;
+                            connector.style.height = '10px';
+                            connector.style.width = '2px';
+                            
+                            connectionsContainer.appendChild(connector);
+                        });
+                    }
+                }
             });
         }
 
@@ -1151,3 +1429,4 @@
     </script>
 </body>
 </html>
+  

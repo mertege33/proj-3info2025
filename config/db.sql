@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS perfil (
   usuario_idusuario INT NOT NULL,
   id_pai INT NOT NULL,
   id_mae INT NOT NULL,
+  alelo_pai varchar(45),
+  alelo_mae varchar(45),
     FOREIGN KEY (usuario_idusuario) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY (id_pai) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
     FOREIGN KEY (id_mae) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION);
