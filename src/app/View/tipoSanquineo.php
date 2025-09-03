@@ -1,20 +1,3 @@
-<?php
-require_once '../../../config/config.inc.php';
-require_once '../Model/TipoSanguineo.class.php';
-
-$resultado = null;
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $idUsuario = $_POST['id_usuario'];
-
-    $tipoSanguineo = new TipoSanguineo($db);
-    $resultado = $tipoSanguineo->calcular($idUsuario);
-}
-
-$query = "SELECT id_usuario, nome FROM usuario";
-$stmt = $db->prepare($query);
-$stmt->execute();
-$usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -24,7 +7,7 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <h1>Calculadora de Tipo Sanguíneo</h1>
-    <form action="tipoSanquineo.php" method="post">
+    <form action="../Control/controle_TipoSanguineo.php" method="post">
         <label for="id_usuario">Selecione o Usuário (Filho):</label>
         <select name="id_usuario" id="id_usuario">
             <?php foreach ($usuarios as $u): ?>
