@@ -62,11 +62,15 @@ CREATE TABLE IF NOT EXISTS doenca (
         u.nome,
         pe.id_perfil ,
         mae.nome as mae,
+        mae.doenca_genealogica, 
         pai.nome as pai
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
    left outer join usuario mae on (mae.id_usuario = pe.id_mae)
    left outer join usuario pai on (pai.id_usuario = pe.id_pai)
+   left outer join doenca dm on (d.id_doenca = mae.doenca_genealogica)
+   left outer join doenca dp on (d.id_doenca = pai.doenca_genealogica)
+   where u.id_usuario = 1;
         
 
 
