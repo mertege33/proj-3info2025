@@ -71,3 +71,15 @@ CREATE TABLE IF NOT EXISTS doenca (
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
    left outer join usuario mae on (mae.id_usuario = pe.id_mae);
+
+
+   --banco da galeria
+CREATE DATABASE galeria;
+USE galeria;
+
+CREATE TABLE cards (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    imagem VARCHAR(255) NOT NULL,
+    link VARCHAR(255) NOT NULL
+);
