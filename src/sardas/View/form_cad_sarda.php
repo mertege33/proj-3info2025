@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Marcela — Menu</title>
+  <title>Sardas — Menu</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../../public/css/styles.css">
@@ -46,83 +46,38 @@
         <path fill="url(#g1)" d="M421.7,345.2Q384,440,290.7,426.3Q197.5,412.6,144,350.5Q90.5,288.4,108.3,198.2Q126.2,108,213.2,86.5Q300.2,65,373.2,114.2Q446.2,163.5,421.7,345.2Z"/>
       </g>
     </svg>
-
+        <center>
     <div class="register-wrapper" role="region" aria-labelledby="formTitle">
       <div class="form-card">
         <div class="form-header">
-          <h2 id="formTitle">Crie sua conta</h2>
-          <p>Cadastre-se para acessar a plataforma e iniciar projetos.</p>
-          <p class="micro">Preencha os campos abaixo — você poderá editar seu perfil depois.</p>
+          <h2 id="formTitle">Descubra a chance do seu filho ter sardas</h2>
+          <p>Defina quem da familia tem sardas e descubra quais as chances baseado nos dados informados   </p>
         </div>
 
         <!-- Inputs apenas visuais (sem submissão real) -->
-        <div class="row">
-          <label>Nome completo</label>
-          <input type="text" name="nome" placeholder="Seu nome completo"  readonly value={nome}/>
-          <input type="text" name="nome" placeholder="Seu nome completo" readonly value={nome}/>
-        </div>
+        
 
         <div class="row two-cols">
           <div>
-            <label>E-mail</label>
-            <input type="email" name="email" placeholder="exemplo@dominio.com" readonly value="{email}" />
+            <label>Pai</label>
+            <input type="text" name="Pai" placeholder="sim" readonly value="" />
           </div>
 
           <div>
-            <label>Telefone</label>
-            <input type="tel" name="telefone" placeholder="(xx) xxxxx-xxxx" readonly value="{telefone}" />
-          </div>
-        </div>
-
-        <div class="row two-cols">
-          <div>
-            <label>Senha</label>
-            <input type="password" name="senha" placeholder="Mínimo 6 caracteres" readonly value="{senha}" />
-          </div>
-
-          <div>
-            <label>Confirmar senha</label>
-            <input type="password" name="confirm" placeholder="Repita a senha" readonly value="{confirm}" />
-          </div>
-        </div>
-
-        <div class="row two-cols">
-          <div>
-            <label>Data de nascimento</label>
-            <input type="date" name="dt_nascimento" readonly value={dt_nascimento}/>
-          </div>
-
-          <div>
-            <label>Instituição</label>
-            <input type="text" name="instituicao" placeholder="Universidade / Empresa (opcional)" readonly value={instituicao}/>
+            <label>Mãe</label>
+            <input type="text" name="Mãe" placeholder="não" readonly value="" />
           </div>
         </div>
 
         <div class="row">
-          <label>Breve descrição / área de pesquisa (opcional)</label>
-          <textarea rows="3" placeholder="Ex.: genética molecular, bioinformática..."></textarea>
-        </div>
-
-        <div class="form-actions">
-          <!-- volta para home -->
-          <a class="btn ghost" href="homescreen.html">Voltar</a>
-
-          <!-- leva para o menu (sem lógica de cadastro) -->
-          <a class="btn primary" href="menu.html">Cadastrar</a>
+          <label>Calcular a chance do seu filho ter sardas</label>
+          <input type="submit" value="calcular"/>
         </div>
       </div>
+        
+      </div>
 
-      <aside class="info-side" aria-hidden="true">
-        <div class="info-card">
-          <h3>Por que criar uma conta?</h3>
-          <ul>
-            <li>Salvar e gerenciar seus projetos</li>
-            <li>Simular experimentos e gerar árvores genealógicas</li>
-          </ul>
-          <p class="small">Ao se cadastrar você concorda com os <a href="homescreen.html">termos</a>.</p>
-        </div>
-      </aside>
-    </div>
+      </center>
   </main>
 
   <script src="../../../public/script/app.js"></script>
