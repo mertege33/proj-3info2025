@@ -1,16 +1,35 @@
-create schema BioLineage;
-use BioLineage;
+-- CRIA O BANCO
+CREATE SCHEMA IF NOT EXISTS BioLineage;
+USE BioLineage;
 
+-- ==========================
+-- TABELA USUÁRIO
+-- ==========================
 CREATE TABLE IF NOT EXISTS usuario (
-  id_usuario INT PRIMARY KEY  auto_increment,
+  id_usuario INT PRIMARY KEY AUTO_INCREMENT,
   nome VARCHAR(45) NOT NULL,
   email VARCHAR(45) NULL,
   telefone VARCHAR(45) NULL,
   senha VARCHAR(45) NULL,
-  dataNascimento date NULL,
-  Instituicao VARCHAR(45) NULL,
-  descricao VARCHAR(45) NULL);
+  dataNascimento DATE NULL,
+  instituicao VARCHAR(45) NULL,
+  descricao VARCHAR(45) NULL
+);
 
+-- ==========================
+-- TABELA DOENÇA
+-- ==========================
+CREATE TABLE IF NOT EXISTS doenca (
+  id_doenca INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(45) NOT NULL
+);
+
+-- Inserindo pelo menos 1 doença para evitar erro de FK
+INSERT INTO doenca (nome) VALUES ('Nenhuma');
+
+-- ==========================
+-- TABELA PERFIL
+-- ==========================
 CREATE TABLE IF NOT EXISTS perfil (
   sexo ENUM('Feminino','Masculino','Não Binário','Outro') NOT NULL,
   id_perfil INT  PRIMARY KEY auto_increment,
@@ -18,6 +37,8 @@ CREATE TABLE IF NOT EXISTS perfil (
   cor_cabelo ENUM('Branco','Castanho','Loiro','Preto','Ruivo') NOT NULL,
   tipo_orelha ENUM ('Com divisão','Sem divisão') NULL,
   tipo_sanguineo ENUM('A','B','AB','O') NULL,
+  daltonismo ENUM('Sim','Não') NULL,
+  sardas ENUM('Sim','Não') NULL,
   daltonismo ENUM('Sim','Não') NULL,
   sardas ENUM('Sim','Não') NULL,
   fator ENUM('+','-') NULL,
