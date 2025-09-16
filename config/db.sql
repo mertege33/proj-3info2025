@@ -2,6 +2,12 @@
 CREATE SCHEMA IF NOT EXISTS BioLineage;
 USE BioLineage;
 
+-- tabela de doenças precisa vir antes
+CREATE TABLE IF NOT EXISTS doenca (
+  id_doenca INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(45) NOT NULL
+);
+
 -- ==========================
 -- TABELA USUÁRIO
 -- ==========================
@@ -35,8 +41,8 @@ INSERT INTO doenca (nome) VALUES ('Nenhuma');
 -- TABELA PERFIL
 -- ==========================
 CREATE TABLE IF NOT EXISTS perfil (
+  id_perfil INT PRIMARY KEY AUTO_INCREMENT,
   sexo ENUM('Feminino','Masculino','Não Binário','Outro') NOT NULL,
-  id_perfil INT  PRIMARY KEY auto_increment,
   cor_olho ENUM('Azul','Castanho','Cinza','Preto','Verde') NOT NULL,
   cor_cabelo ENUM('Branco','Castanho','Loiro','Preto','Ruivo') NOT NULL,
   tipo_orelha ENUM ('Com divisão','Sem divisão') NULL,
@@ -54,12 +60,13 @@ CREATE TABLE IF NOT EXISTS perfil (
   usuario_idusuario INT NOT NULL,
   id_pai INT NOT NULL,
   id_mae INT NOT NULL,
-  alelo_pai varchar(45),
-  alelo_mae varchar(45),
-    FOREIGN KEY (usuario_idusuario) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY (id_pai) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
-    FOREIGN KEY (id_mae) REFERENCES usuario (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION);
-    FOREIGN KEY (doenca_genealogica) REFERENCES doenca (id_doenca) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  alelo_pai VARCHAR(45),
+  alelo_mae VARCHAR(45),
+  FOREIGN KEY (usuario_idusuario) REFERENCES usuario (id_usuario),
+  FOREIGN KEY (id_pai) REFERENCES usuario (id_usuario),
+  FOREIGN KEY (id_mae) REFERENCES usuario (id_usuario),
+  FOREIGN KEY (doenca_genealogica) REFERENCES doenca (id_doenca)
+);
 
 -- dados de teste
     insert into usuario values(null, 'Nome teste','emailteste@mail.com', '12345678','123','2000-06-23','IFC','usuario teste');
@@ -93,7 +100,6 @@ CREATE TABLE IF NOT EXISTS perfil (
         pai.nome as pai
    from usuario u
    inner join perfil pe on (pe.usuario_idusuario = u.id_usuario)
-   left outer join usuario mae on (mae.id_usuario = pe.id_mae);
    left outer join usuario mae on (mae.id_usuario = pe.id_mae)
    left outer join usuario pai on (pai.id_usuario = pe.id_pai)
    left outer join doenca dm on (d.id_doenca = mae.doenca_genealogica)
