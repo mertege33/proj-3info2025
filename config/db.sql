@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS usuario (
   nome VARCHAR(45) NOT NULL,
   email VARCHAR(45) NULL,
   telefone VARCHAR(45) NULL,
-  senha VARCHAR(45) NULL,
+  senha VARCHAR(255) NULL,
   dataNascimento DATE NULL,
   instituicao VARCHAR(45) NULL,
   descricao VARCHAR(45) NULL
